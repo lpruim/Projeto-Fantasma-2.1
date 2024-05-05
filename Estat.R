@@ -101,6 +101,6 @@ mean_ratings <- mean_ratings %>%
 ggplot(mean_ratings) +
   aes(x=season, y=imdb, group=1) +
   geom_line(size=1,colour="#A11D21") + geom_point(colour="#A11D21",size=2) +
-  labs(title="Variação da nota IMDB por temporada dos episódios",x="Temporadas", y="IMDb Médio") +
+  labs(x="Temporadas", y="IMDb Médio") +
   theme_estat()
 ggsave("resultado2.pdf", width = 158, height = 93, units = "mm")
