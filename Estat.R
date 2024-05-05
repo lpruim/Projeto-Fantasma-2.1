@@ -4,6 +4,8 @@ library(dplyr)
 library(stringr)
 library(forcats)
 
+#ANALISE 1
+
 banco <- read.csv("C:\\Users\\lucas\\OneDrive\\Área de Trabalho\\PROJETO ESTAT\\banco_final.csv")
 banco$date_aired <- as.Date(banco$date_aired)
 banco <- banco %>%
@@ -81,3 +83,24 @@ ggplot(graf) +
   theme_estat()
 
 ggsave("resultado1.pdf", width = 158, height = 93, units = "mm")
+
+#ANALISE 2 
+
+mean_ratings <- aggregate(imdb ~ season, data = banco, FUN = mean)
+mean_ratings <- mean_ratings %>%
+  mutate(season = case_when(
+    season %>% str_detect("Special") ~ "Especial",
+    season %>% str_detect("Movie") ~ "Filme",
+    season %>% str_detect("Crossover") ~ "CrossOver",
+    season %>% str_detect("1") ~ "1",
+    season %>% str_detect("2") ~ "2",
+    season %>% str_detect("3") ~ "3",
+    season %>% str_detect("4") ~ "4"))
+
+
+ggplot(mean_ratings) +
+  aes(x=season, y=imdb, group=1) +
+  geom_line(size=1,colour="#A11D21") + geom_point(colour="#A11D21",size=2) +
+  labs(title="Variação da nota IMDB por temporada dos episódios",x="Temporadas", y="IMDb Médio") +
+  theme_estat()
+ggsave("resultado2.pdf", width = 158, height = 93, units = "mm")
