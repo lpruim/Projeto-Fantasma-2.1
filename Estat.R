@@ -104,3 +104,25 @@ ggplot(mean_ratings) +
   labs(x="Temporadas", y="IMDb Médio") +
   theme_estat()
 ggsave("resultado2.pdf", width = 158, height = 93, units = "mm")
+
+
+# analise 4
+
+
+
+ggplot(banco) +
+  aes(x = imdb, y = engagement) +
+  geom_point(colour = "#A11D21", size = 3) +
+  labs(
+    x = "Notas IMDB",
+    y = "Engajamento"
+  ) +
+  theme_estat()
+ggsave("disp_uni.pdf", width = 158, height = 93, units = "mm")
+
+
+
+
+
+
+
