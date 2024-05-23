@@ -105,8 +105,47 @@ ggplot(mean_ratings) +
   theme_estat()
 ggsave("resultado2.pdf", width = 158, height = 93, units = "mm")
 
+#ANALISE 3 
 
-# analise 4
+novo_banco <- banco %>%
+  mutate(setting_terrain = case_when(
+    setting_terrain %>% str_detect("Forest") ~ "Flhoresta",
+    setting_terrain %>% str_detect("Rural") ~ "Rural",
+    setting_terrain %>% str_detect("Urban") ~ "Urbano"
+  )) %>%
+  mutate(trap_work_first = case_when(
+    trap_work_first %>% str_detect("True") ~ "Verdade",
+    trap_work_first %>% str_detect("False") ~ "Falso",
+  )) %>%
+  group_by(setting_terrain, trap_work_first) %>%
+  summarise(freq = n()) %>%
+  mutate(
+    freq_relativa = round(freq / sum(freq) * 100,1)
+  )
+
+novo_banco <- na.omit(novo_banco)
+novo_banco <- novo_banco %>%
+  rename(Funcionou = trap_work_first)
+
+porcentagens <- str_c(novo_banco$freq_relativa, "%") %>% str_replace("\\.", ",")
+legendas <- str_squish(str_c(novo_banco$freq, " (", porcentagens, ")"))
+
+ggplot(novo_banco) +
+  aes(
+    x = fct_reorder(setting_terrain, freq, .desc = T), y = freq,
+    fill = Funcionou, label = legendas
+  ) +
+  geom_col(position = position_dodge2(preserve = "single", padding = 0)) +
+  geom_text(
+    position = position_dodge(width = .9),
+    vjust = -0.5, hjust = 0.5,
+    size = 3
+  ) +
+  labs(x = "Locais", y = "Frequência") +
+  theme_estat()
+ggsave("colunas-bi-freq.pdf", width = 158, height = 93, units = "mm")
+
+#ANALISE 4
 
 
 
