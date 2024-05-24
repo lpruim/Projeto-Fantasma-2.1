@@ -226,16 +226,19 @@ ggsave("colunas-bi-freq.pdf", width = 158, height = 93, units = "mm")
 
 
 
-ggplot(banco) +
-  aes(x = imdb, y = engagement) +
-  geom_point(colour = "#A11D21", size = 3,alpha = 0.5) +
-  labs(
-    x = "Notas IMDB",
-    y = "Engajamento"
-  ) +
-  theme_estat()
-ggsave("disp_1uni.pdf", width = 158, height = 93, units = "mm")
+library(ggplot2)
 
+ggplot(banco) +
+  aes(x = engagement, y = imdb) +
+  geom_point(colour = "#A11D21", size = 3, alpha = 0.5) +
+  labs(
+    x = "Engajamento",
+    y = "Nota IMDM"
+  ) +
+  theme_estat() +
+  scale_y_continuous(breaks = c(0, 2, 4, 6, 8))
+
+ggsave("disp_1uni.pdf", width = 158, height = 93, units = "mm")
 
 banco %>% 
   print_quadro_resumo(var_name = imdb)
