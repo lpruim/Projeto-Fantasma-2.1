@@ -4,7 +4,7 @@ library(dplyr)
 library(stringr)
 library(forcats)
 library(tibble)
-
+library(tidyr)
 #ANALISE 1
 
 banco <- read.csv("C:\\Users\\lucas\\OneDrive\\Área de Trabalho\\PROJETO ESTAT\\banco_final.csv")
@@ -240,6 +240,58 @@ ggsave("disp_1uni.pdf", width = 158, height = 93, units = "mm")
 banco %>% 
   print_quadro_resumo(var_name = imdb)
 
+correlção <- cor(banco$imdb, banco$engagement)
+
+#ANALISE 5
+
+banco5 <- banco %>%
+  mutate(caught_fred = case_when(
+    caught_fred %>% str_detect("True") ~ "Fred")) %>% 
+  mutate(caught_daphnie = case_when(
+    caught_daphnie %>% str_detect("True") ~ "Daphnie")) %>%
+  mutate(caught_velma = case_when(
+    caught_velma %>% str_detect("True") ~ "Velma")) %>%
+  mutate(caught_shaggy = case_when(
+    caught_shaggy %>% str_detect("True") ~ "Salsicha")) %>%
+  mutate(caught_scooby = case_when(
+    caught_scooby %>% str_detect("True") ~ "Scooby")) 
+
+banco5 <- banco5 %>%
+  select(engagement, caught_fred, caught_daphnie, caught_scooby, caught_shaggy, caught_velma)
 
 
+substituicao <- function(coluna1, coluna2, coluna3, coluna4, coluna5) {
 
+  coluna1 <- ifelse(is.na(coluna1), "", coluna1)
+  coluna2 <- ifelse(is.na(coluna2), "", coluna2)
+  coluna3 <- ifelse(is.na(coluna3), "", coluna3)
+  coluna4 <- ifelse(is.na(coluna4), "", coluna4)
+  coluna5 <- ifelse(is.na(coluna5), "", coluna5)
+  
+  
+  resultado <- paste(coluna1, coluna2, coluna3, coluna4, coluna5)
+  return(resultado)
+}
+
+
+banco5$concatenacao_caught <- substituicao(banco5$caught_fred, banco5$caught_daphnie, banco5$caught_scooby, banco5$caught_shaggy, banco5$caught_velma)
+
+banco5 <- separate_rows(banco5, concatenacao_caught, sep = " ")
+
+banco5 <- banco5 %>% mutate(concatenacao_caught = na_if(concatenacao_caught, ""))
+
+banco5 <- subset(banco5, !is.na(concatenacao_caught))
+
+
+ggplot(banco5) +
+  aes(x = reorder(concatenacao_caught, engagement, FUN = median), y = engagement) +
+  geom_boxplot(fill = c("#A11D21"), width = 0.5) +
+  stat_summary(
+    fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
+  ) +
+  labs(x = "Personagens", y = "Engajamento") +
+  theme_estat()
+ggsave("box_bi1.pdf", width = 158, height = 93, units = "mm")
+banco5%>% 
+  group_by(concatenacao_caught) %>% # caso mais de uma categoria
+  print_quadro_resumo(var_name = engagement)
