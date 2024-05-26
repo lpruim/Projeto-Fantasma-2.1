@@ -226,7 +226,6 @@ ggsave("colunas-bi-freq.pdf", width = 158, height = 93, units = "mm")
 
 
 
-library(ggplot2)
 
 ggplot(banco) +
   aes(x = engagement, y = imdb) +
@@ -257,27 +256,33 @@ banco5 <- banco %>%
   mutate(caught_shaggy = case_when(
     caught_shaggy %>% str_detect("True") ~ "Salsicha")) %>%
   mutate(caught_scooby = case_when(
-    caught_scooby %>% str_detect("True") ~ "Scooby")) 
+    caught_scooby %>% str_detect("True") ~ "Scooby")) %>%
+  mutate(caught_other = case_when(
+    caught_other %>% str_detect("True") ~ "Outros")) %>%
+  mutate(caught_not = case_when(
+    caught_not %>% str_detect("True") ~ "Ninguém ")) 
 
 banco5 <- banco5 %>%
-  select(engagement, caught_fred, caught_daphnie, caught_scooby, caught_shaggy, caught_velma)
+  select(engagement, caught_fred, caught_daphnie, caught_scooby, caught_shaggy, caught_velma, caught_not, caught_other)
 
 
-substituicao <- function(coluna1, coluna2, coluna3, coluna4, coluna5) {
+substituicao <- function(coluna1, coluna2, coluna3, coluna4, coluna5, coluna6, coluna7) {
 
   coluna1 <- ifelse(is.na(coluna1), "", coluna1)
   coluna2 <- ifelse(is.na(coluna2), "", coluna2)
   coluna3 <- ifelse(is.na(coluna3), "", coluna3)
   coluna4 <- ifelse(is.na(coluna4), "", coluna4)
   coluna5 <- ifelse(is.na(coluna5), "", coluna5)
+  coluna6 <- ifelse(is.na(coluna6), "", coluna6)
+  coluna7 <- ifelse(is.na(coluna7), "", coluna7)
   
   
-  resultado <- paste(coluna1, coluna2, coluna3, coluna4, coluna5)
+  resultado <- paste(coluna1, coluna2, coluna3, coluna4, coluna5, coluna6, coluna7)
   return(resultado)
 }
 
 
-banco5$concatenacao_caught <- substituicao(banco5$caught_fred, banco5$caught_daphnie, banco5$caught_scooby, banco5$caught_shaggy, banco5$caught_velma)
+banco5$concatenacao_caught <- substituicao(banco5$caught_fred, banco5$caught_daphnie, banco5$caught_scooby, banco5$caught_shaggy, banco5$caught_velma, banco5$caught_not, banco5$caught_other)
 
 banco5 <- separate_rows(banco5, concatenacao_caught, sep = " ")
 
