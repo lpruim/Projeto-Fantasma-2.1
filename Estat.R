@@ -170,18 +170,16 @@ mean_ratings <- mean_ratings %>%
     season %>% str_detect("4") ~ "4"))
 mean_ratings <- na.omit(mean_ratings)
 ggplot(mean_ratings) +
-  aes(x = reorder(season, imdb, FUN = median), y = imdb) +
+  aes(x = factor(season, levels = c("1", "2", "3", "4")), y = imdb) +
   geom_boxplot(fill = c("#A11D21"), width = 0.5) +
   stat_summary(
     fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
   ) +
   labs(x = "Temporadas", y = "Nota Imdb") +
   theme_estat()
-ggsave("box_bi.pdf", width = 158, height = 93, units = "mm")
-mean_ratings %>% 
-  group_by(season) %>% # caso mais de uma categoria
-  print_quadro_resumo(var_name = imdb)
 
+
+ggsave("box_bi.pdf", width = 158, height = 93, units = "mm")
 #ANALISE 3 
 
 novo_banco <- banco %>%
