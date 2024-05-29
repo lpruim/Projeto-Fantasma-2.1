@@ -12,8 +12,10 @@ banco$date_aired <- as.Date(banco$date_aired)
 banco <- banco %>%
   mutate(ano = format(date_aired, "%Y"))
 banco$ano <- as.integer(banco$ano)
-banco$decada <- cut(banco$ano, breaks = c(1960, seq(1970, 2020, by = 10), Inf),
-                    labels = c("1960", "1970", "1980", "1990", "2000", "2010", "2020"))
+banco$decada <- cut(banco$ano, 
+                    breaks = c(seq(1950, 2030, by = 10)), 
+                    labels = c("1950", "1960", "1970", "1980", "1990", "2000", "2010", "2020"),
+                    right = FALSE)
 
 banco <- banco %>%
   rename(tipos = format)
@@ -45,12 +47,15 @@ theme_estat <- function(...) {
   )
 }
 
-graf <- banco %>%
+freq_data <- banco %>%
+  group_by(decada, tipos) %>%
+  summarise(freq = n(), .groups = 'drop')
+graf <- freq_data %>%
   mutate(decada = case_when(
-    decada %>% str_detect("1960") ~ "1960",
-    decada %>% str_detect("1970") ~ "1970",
-    decada %>% str_detect("1980") ~ "1980",
-    decada %>% str_detect("1990") ~ "1990",
+    decada %>% str_detect("1960") ~ "60",
+    decada %>% str_detect("1970") ~ "70",
+    decada %>% str_detect("1980") ~ "80",
+    decada %>% str_detect("1990") ~ "90",
     decada %>% str_detect("2000") ~ "2000",
     decada %>% str_detect("2010") ~ "2010",
     decada %>% str_detect("2020") ~ "2020"
@@ -59,15 +64,10 @@ graf <- banco %>%
     tipos %>% str_detect("Movie") ~ "Filme",
     tipos %>% str_detect("CrossOver") ~ "CrossOver",
     
-  )) %>%
-  group_by(decada,tipos)
+  )) 
   
 
-graf <- banco %>%
-  select(decada, season)
-porcentagens <- str_c(graf$freq_relativa, "%") %>% str_replace("\\.", ",")
 
-legendas <- str_squish(str_c(graf$freq, " (", porcentagens, ")"))
 
 
 print_quadro_resumo <- function(data, var_name, title="Medidas resumo da(o) [nome da variável]", label="quad:quadro_resumo1")
@@ -146,6 +146,7 @@ print_quadro_resumo <- function(data, var_name, title="Medidas resumo da(o) [nom
   writeLines(latex)
 }
 
+graf$decada <- factor(graf$decada, levels = c("60", "70", "80", "90", "2000", "2010", "2020"))
 
 
 ggplot(graf) +
@@ -155,6 +156,7 @@ ggplot(graf) +
   labs(x = "Decadas", y = "Frequência") +
   theme_estat()
 ggsave("series_grupo.pdf", width = 158, height = 93, units = "mm")
+
 #ANALISE 2 
 mean_ratings %>% 
   group_by(season) %>% # caso mais de uma categoria
@@ -301,3 +303,26 @@ ggsave("box_bi1.pdf", width = 158, height = 93, units = "mm")
 banco5%>% 
   group_by(concatenacao_caught) %>% # caso mais de uma categoria
   print_quadro_resumo(var_name = engagement)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
