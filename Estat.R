@@ -185,22 +185,25 @@ ggsave("box_bi.pdf", width = 158, height = 93, units = "mm")
 #ANALISE 3 
 
 novo_banco <- banco %>%
-  mutate(setting_terrain = case_when(
-    setting_terrain %>% str_detect("Forest") ~ "Flhoresta",
-    setting_terrain %>% str_detect("Rural") ~ "Rural",
-    setting_terrain %>% str_detect("Urban") ~ "Urbano"
-  )) %>%
-  mutate(trap_work_first = case_when(
-    trap_work_first %>% str_detect("True") ~ "Verdade",
-    trap_work_first %>% str_detect("False") ~ "Falso",
-  )) %>%
-  group_by(setting_terrain, trap_work_first) %>%
-  summarise(freq = n()) %>%
   mutate(
-    freq_relativa = round(freq / sum(freq) * 100,1)
-  )
+    setting_terrain = case_when(
+      str_detect(setting_terrain, "Forest") ~ "Floresta",
+      str_detect(setting_terrain, "Rural") ~ "Rural",
+      str_detect(setting_terrain, "Urban") ~ "Urbano",
+     ),
+    trap_work_first = case_when(
+      str_detect(trap_work_first, "True") ~ "Verdade",
+      str_detect(trap_work_first, "False") ~ "Falso",
+      
+    )
+  ) %>% 
+  na.omit() %>%
+  group_by(setting_terrain, trap_work_first) %>%
+  summarise(freq = n(), .groups = 'drop') %>%
+  group_by(setting_terrain) %>%
+  mutate(freq_relativa = round(freq / sum(freq) * 100, 1))
 
-novo_banco <- na.omit(novo_banco)
+
 novo_banco <- novo_banco %>%
   rename(Funcionou = trap_work_first)
 
@@ -239,10 +242,10 @@ ggplot(banco) +
 
 ggsave("disp_1uni.pdf", width = 158, height = 93, units = "mm")
 
-banco %>% 
-  print_quadro_resumo(var_name = imdb)
 
 correlção <- cor(banco$imdb, banco$engagement)
+banco%>% 
+  print_quadro_resumo(var_name = engagement)
 
 #ANALISE 5
 
