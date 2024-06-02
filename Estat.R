@@ -247,6 +247,8 @@ correlção <- cor(banco$imdb, banco$engagement)
 banco%>% 
   print_quadro_resumo(var_name = engagement)
 
+banco%>%
+  print_quadro_resumo(var_name = imdb)
 #ANALISE 5
 
 banco5 <- banco %>%
